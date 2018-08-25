@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>net.hwyz.leo.</string>
+	<key>category</key>
+	<string>Internet</string>
+	<key>connections</key>
+	<dict>
+		<key>7173C0C6-1FBB-4DEE-9E24-155CAA2D2232</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>CA2766FB-FF7A-4CD6-87CA-CE44FD3F1931</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>hwyz_leo</string>
+	<key>description</key>
+	<string>快速搜索iterm已有profile并打开</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>iTerm Profiles Search</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>63</integer>
+				<key>keyword</key>
+				<string>ips</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>查询Profiles中</string>
+				<key>script</key>
+				<string>import os
+import sys
+import xml.etree.ElementTree as ET
+import biplist
+
+
+q = "{query}"
+
+profile_file = os.path.join(
+	os.environ["HOME"],
+	"Library",
+	"Preferences",
+	"com.googlecode.iterm2.plist"
+)
+
+pl = biplist.readPlist(profile_file)
+
+names = [nb.get('Name') for nb in pl['New Bookmarks']]
+
+if len("{query}") &gt; 1:
+	names = [n for n in names if q.lower() in n.lower()]
+
+names.sort(key=str.lower)
+
+root = ET.Element('items')
+
+for n in names:
+	ie = ET.Element('item', valid="yes", arg=n)
+	te = ET.Element('title')
+	te.text = n
+	ie.append(te)
+	icon = ET.Element('icon')
+	icon.text="icon.png"
+	ie.append(icon)
+	root.append(ie)
+print '&lt;?xml version="1.0"?&gt;'
+print ET.tostring(root)
+print ""</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>选择一个Profile</string>
+				<key>title</key>
+				<string>iTerm Profiles Search</string>
+				<key>type</key>
+				<integer>3</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>7173C0C6-1FBB-4DEE-9E24-155CAA2D2232</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>applescript</key>
+				<string>on alfred_script(q)
+	if application "iTerm2" is running or application "iTerm" is running then
+		run script "
+			on run {q}
+				tell application \":Applications:iTerm.app\"
+					activate
+					try
+						select first window
+						set onlywindow to false
+					on error
+						create window with profile q
+						select first window
+						set onlywindow to true
+					end try
+					tell current window
+						create tab with profile q
+					end tell
+				end tell
+			end run
+		" with parameters {q}
+	else
+		run script "
+			on run {q}
+				tell application \":Applications:iTerm.app\"
+					activate
+					try
+						select first window
+					on error
+						create window with profile q
+						select first window
+					end try
+					tell current window
+						create tab with profile q
+						select first tab
+						tell first tab
+							close
+						end tell
+					end tell
+				end tell
+			end run
+		" with parameters {q}
+	end if
+end alfred_script</string>
+				<key>cachescript</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.applescript</string>
+			<key>uid</key>
+			<string>CA2766FB-FF7A-4CD6-87CA-CE44FD3F1931</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>7173C0C6-1FBB-4DEE-9E24-155CAA2D2232</key>
+		<dict>
+			<key>xpos</key>
+			<integer>280</integer>
+			<key>ypos</key>
+			<integer>80</integer>
+		</dict>
+		<key>CA2766FB-FF7A-4CD6-87CA-CE44FD3F1931</key>
+		<dict>
+			<key>xpos</key>
+			<integer>480</integer>
+			<key>ypos</key>
+			<integer>80</integer>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string>hwyz.net</string>
+</dict>
+</plist>
